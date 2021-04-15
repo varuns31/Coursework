@@ -1,8 +1,26 @@
-; This is the file you will use for the lab assignment
-; Make sure to comment your code properly and don't exceed 
-; the line limitation for this assignment.  Good luck!
+; Varun Singhal 4/15/2021
+; Read an array element
+;add to a predifined meemory location if its positive 
+;Program finds sum of positive numbers in an array
+
+;R0 holds memory location of array element to read
+;R1 holds array element to read
+;R2 holds counter initially at 10
+;R5 holds sum of positive numbers
+
 
 0011 0001 0000 0000 ; x3100 - starting address of the program
+0101 1011 0110 0000 ; R5<-- R5 AND x0000			Clear the current Value
+1110 0000 0011 0000 ; R0<-- PC + x0030				Make R0 a pointer, pointing at first array element
+0101 0100 1010 0000 ; R2<-- R2 AND x0000			Clear the current Value
+0001 0100 1010 1010 ; R2<-- R2 + x000A 				put the value \-x0A in R2
+0110 0010 0000 0000 ; R1<-- M[R0 + x0000]			R1 loads the value of current array element
+0000 1100 0000 0001 ; if n/z,PC<-- PC + x0001			check if element > '0'
+0001 1011 0100 0001 ; R5<-- R5 + R1				add element to R5 if condition above is met
+0001 0000 0010 0001 ; R0<-- RO + x0001				move pointer to next element
+0001 0100 1011 1111 ; R2<-- R2 + xFFFF				Decrement Counter at R2
+0000 0011 1111 1010 ; if z/p,PC<-- PC + xFFFA			check if counter <= '0' if no PC decrements by 6
+1111 0000 0010 0101 ; HALT					STOP Program
 
 ; The program description and code starts here
 
