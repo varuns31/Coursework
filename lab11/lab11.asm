@@ -18,7 +18,7 @@
             ADD   R3,R1,R2            ; R3 contains input number -1
             ADD   R3,R3,R2           ; R3 contains input number -2
                                       ;   (initializes outer count)
-            ST R5,ZERO                ; Initialize R5
+            ST R5,ZERO                ; Initialize R5 to 0
 OUTERLOOP   ADD   R4,R0,R3            ; Copy outer count into inner count
  
 ; This loop multiplies via addition (6x5 = 6+6+6+6+6 = 30,
