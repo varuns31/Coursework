@@ -1,9 +1,24 @@
 Question 1: Describe the errors that occur when trying to assemble lab11.asm. Identify the cause of each error.
 
+ First Pass:
+ 14: illegal operands for missing opcode ; x3000 cannot be written directly to mark as origin.
+ 16: instruction appears before .ORIG ; The program needs to start with .ORIG
+ 17: constant outside of allowed range ; -1 is written as xFFFF. Also x3010 cannot be added to a register through lc3 commands.
+ 19: illegal operands for ADD; R1,,R2 is not allowed as there is extra comma which is not a register.
+ 30: constant outside of allowed range; To make a register x0000 can be used which is at PC+5
+ 32: label OUTERLOOP has already appeared; zp cannot be interchanged to pz
+ 41: no .END directive found ; .END defines when the program code ends and is necessary for program.
+
+ Second Pass:
+ 35: unknown label "xxxx"; ST R1,RESULT needs to be used instead of this.
 
 
 Question 2: For each label in the code, write down the corresponding memory location. 
-
+OUTERLOOP:X3004
+INNERLOOP:X3005
+INPUT:X300E
+RESULT:X3011
 
 
 Question 3: Between using labels and explicit memory locations/offsets, which one makes the most sense, and why?
+Labels make more sense as calculating the offset is a tediious task. Also if we change a program, the labels will calculate the offset themselves while we will have to calculate the offset ourselves and change them in the program.
