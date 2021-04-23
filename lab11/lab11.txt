@@ -19,6 +19,14 @@ INNERLOOP:X3005
 INPUT:X300E
 RESULT:X3011
 
+For my updated code:
+OUTERLOOP:X3005
+INNERLOOP:X3006
+INPUT:X300F
+ZERO:x3010
+NEG:x3011
+RESULT:X3012
+
 
 Question 3: Between using labels and explicit memory locations/offsets, which one makes the most sense, and why?
 Labels make more sense as calculating the offset is a tediious task. Also if we change a program, the labels will calculate the offset themselves while we will have to calculate the offset ourselves and change them in the program.
