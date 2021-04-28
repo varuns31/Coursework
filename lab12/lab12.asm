@@ -2,23 +2,69 @@
 ; character, the table uses 16 memory locations, each of which contains
 ; 8 bits (the high 8 bits, for your convenience) marking pixels in the
 ; line for that character.
-
-FONT_DATA
-	.FILL	x0000
-	.FILL	x0000
-	.FILL	x0000
-	.FILL	x0000
-	.FILL	x0000
-	.FILL	x0000
-	.FILL	x0000
-	.FILL	x0000
-	.FILL	x0000
-	.FILL	x0000
-	.FILL	x0000
-	.FILL	x0000
-	.FILL	x0000
-	.FILL	x0000
-	.FILL	x0000
+;This Program Finds the Address for ASCII character in 8x16 font and prints 
+;it to the screen
+;R0->Print Characters
+;R1->Holds address x5000 and holds address for first line to be printed in FONT_DATA
+;R2->COUNTER FOR INNER LOOP
+;R3->HOLDS ASCII CHARACTER TO BE PRINTED AND HOLDS OFFSET TO REACH ASCII CHARACTER IN FONT_DATA
+;R4->COUNTER FOR GETTING ASCII VALUE X 16 AND HOLDS DATA AT WHICH R5 IS POINTING
+;R5->POINTER POINTING TO LINE OF FONT_DATA TO BE PRINTED
+;R6->COUNTER FOR OUTER LOOP
+.ORIG x3000
+           LD R1,ADDR		;R1 gets address x5000 
+	   LDR R3,R1,#2		;R3 gets Value of ascii character to be printed		
+	   LEA R5,FONT_DATA	;R5 gets address of first line of FONT_DATA
+	   AND R6,R6,#0		;R6=0
+           ADD R6,R6,#15	;R6=15
+           AND R4,R4,#0		;R4=0
+           ADD R4,R4,#3		;R4=3
+LOOP	   BRn FIN		;Finish when R4<0
+           ADD R3,R3,R3		;R3=16*R3 after LOOP COMPLETION
+	   ADD R4,R4,#-1	;
+	   BR LOOP		;UNCONDITIONAL LOOP
+FIN	   ADD R5,R5,R3		;R5 gets address of first line of FONT_DATA of ascii character to be printed
+MAIN       BRn STOP		;STOP when R6<0
+	   LD R2,RESET		;R2=8 to print first 8 bits in FONT_DATA as only first 8 characters have info to be printed
+           LDR R4,R5,#0		;R4 gets data where R5 is pointing
+INNER_LOOP ADD R2,R2,#-1	;
+           BRn END_LINE		;END of line when R2<0
+           ADD R4,R4,#0		;set cc according to R4
+	   BRn ONE		;If most significant bit is one go to printing one
+           BRzp ZERO		;If most significant bit is zero go to printing zero
+ZERO       LDR R0,R1,#0		;R0 gets Value that needs to be printed for zero
+           TRAP x21		;Print R0 on screen
+           ADD R4,R4,R4		;Left Shift R4
+           BR INNER_LOOP	;GO back to loop for same line
+ONE        LDR R0,R1,#1		;R0 gets Value that needs to be printed for one
+           TRAP x21		;Print R0 on screen
+           ADD R4,R4,R4		;Left Shift R4
+           BR INNER_LOOP	;GO back to loop for same line
+END_LINE   LD R0,NULL		;R0 gets value of next line
+           TRAP x21		;Print next line
+           ADD R5,R5,#1		;Pointer moves to next address in FONT_DATA
+	   ADD R6,R6,#-1	;R6 makes sure only 16 lines are printed
+	   BR MAIN		;Unconditional LOOP
+STOP       HALT			;Halt
+NULL      .FILL x0A		;Next Line ASCII value
+ADDR      .FILL x5000		;Address where our values are kept
+RESET     .FILL X0008		;Reset R2 to 8 so that only first 8 bits are read
+FONT_DATA 			
+	   .FILL x0000	
+	   .FILL x0000
+	   .FILL x0000
+	   .FILL x0000
+           .FILL x0000
+           .FILL x0000
+           .FILL x0000
+           .FILL x0000
+           .FILL x0000
+           .FILL x0000
+	   .FILL x0000
+	   .FILL x0000
+           .FILL x0000
+           .FILL x0000
+           .FILL x0000
 	.FILL	x0000
 	.FILL	x0000
 	.FILL	x0000
@@ -4100,3 +4146,4 @@ FONT_DATA
 	.FILL	x0000
 	.FILL	x0000
 	.FILL	x0000
+.END
