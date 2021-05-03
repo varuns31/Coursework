@@ -2,7 +2,71 @@
 ; character, the table uses 16 memory locations, each of which contains
 ; 8 bits (the high 8 bits, for your convenience) marking pixels in the
 ; line for that character.
+;This code goes to the nth line of the character to print and prints its nth line and then prints nth line of other characters 
+;After seeing a null character, it moves to the next line and prints (n+1)th line of all characters.
+;R0->PRINT ON SCREEN
+;R1->
+;R2->MAIN COUNTER TO TELL IF WE FINISHED PRINTING
+;R3->MAIN COUNTER TO TELL WHICH LINE WE ARE ON FOR EACH CHARACTER
+;R4->ENDS UP WITH THE LINE WE NEED TO PRINT FROM FONT_DATA
+;R5->COUNTER TO TELL WHICH ASCII CHARACTER WE ARE ON
+;R6->COUNTER FOR INNER_LOOP TO PRINT ONE LINE INSIDE FONT_DATA
+.ORIG x3000
+				
+		        	LD R2,RESET1
+				AND R3,R3,#0
+MA				AND R5,R5,#0
+MAIN				ADD R2,R2,#0
+				BRnz STOP
+				LD R4,ASC
+				ADD R4,R4,R5
+				LDR R4,R4,#2
+				BRz END_LINE
+				LD R1,RESET4
+CALFONTDATA	    		BRnz FIN
+				ADD R4,R4,R4
+				ADD R1,R1,#-1
+				BRnzp CALFONTDATA
+FIN				LD R6,RESET2
+				LEA R1,FONT_DATA
+				ADD R1,R1,R4
+				ADD R1,R1,R3
+     				LDR R4,R1,#0
+INNER				ADD R4,R4,#0
+				BRn PRINTONE
+				BRzp PRINTZERO
+PRINTZERO       		LD R0,ASC
+				LDR R0,R0,#0
+				TRAP x21
+				ADD R4,R4,R4
+				ADD R6,R6,#-1
+				BRp INNER
+				ADD R5,R5,#1
+				ADD R6,R6,#0
+				BRnz MAIN
+PRINTONE			LD R0,ASC
+				LDR R0,R0,#1
+				TRAP x21
+				ADD R4,R4,R4
+				ADD R6,R6,#-1
+				BRp INNER
+				ADD R5,R5,#1
+				ADD R6,R6,#0
+				BRnz MAIN
+END_LINE
+				AND R0,R0,#0
+				ADD R0,R0,#10
+				TRAP x21
+				ADD R3,R3,#1
+				ADD R2,R2,#-1
+				BRnzp MA
 
+STOP   HALT				
+RESET1 .FILL x0010
+RESET2 .FILL x0008	
+RESET3	.FILL x0010
+RESET4 	.FILL x0004
+ASC .FILL x5000
 FONT_DATA
 	.FILL	x0000
 	.FILL	x0000
@@ -4100,3 +4164,4 @@ FONT_DATA
 	.FILL	x0000
 	.FILL	x0000
 	.FILL	x0000
+.END
